@@ -8,8 +8,10 @@ const int screen_height = 768;
 TGAImage image(screen_with, screen_height, TGAImage::RGB);
 
 
-int CanvasToViewport(int x, int y, int* vx, int* vy)
+int CanvasToViewport(int x, int y, int width, int height, double vwidth, double vheight, double* vx, double* vy)
 {
+	*vx = x / width * vwidth;
+	*vy = y / height * vheight;
 	return 0;
 }
 
