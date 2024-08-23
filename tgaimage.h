@@ -50,3 +50,5 @@ private:
 	std::vector<std::uint8_t> data = {};
 };
 
+int test_tillen_tgaimage();
+

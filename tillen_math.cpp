@@ -1,8 +1,23 @@
+#include <sstream>
+
 #include "tillen_math.h"
 
 // =========== TillenArray2 beg ===========
 TillenArray2::TillenArray2(double v0, double v1) : x(v0), y(v1) {};
 TillenArray2::~TillenArray2() {}
+std::string TillenArray2::to_str()const
+{
+	std::ostringstream oss;
+	oss << "TillenArray2[" << std::hex << this << "]: " << std::dec << "(" << x << "," << y << ")";
+	return oss.str();
+}
+std::ostream& operator<<(std::ostream& output, const TillenArray2& a)
+{
+	std::ostringstream oss;
+	output << a.to_str();
+	return output;
+}
+
 
 TillenArray2 TillenArray2::array_add(const TillenArray2& a)
 {
@@ -49,6 +64,19 @@ double TillenArray2::array_cross(const TillenArray2& a)
 // =========== TillenArray3 beg ===========
 TillenArray3::TillenArray3(double v0, double v1, double v2) : x(v0), y(v1), z(v2) {};
 TillenArray3::~TillenArray3() {}
+std::string TillenArray3::to_str()const
+{
+	std::ostringstream oss;
+	oss << "TillenArray3[" << std::hex << this << "]: " << std::dec << "(" << x << "," << y << "," << z << ")";
+	return oss.str();
+}
+std::ostream& operator<<(std::ostream& output, const TillenArray3& a)
+{
+	std::ostringstream oss;
+	output << a.to_str();
+	return output;
+}
+
 TillenArray3 TillenArray3::array_add(const TillenArray3& a)
 {
 	return TillenArray3(this->x + a.x, this->y + a.y, this->z + a.z);
@@ -87,14 +115,30 @@ double TillenArray3::operator*(const TillenArray3& a)
 
 TillenArray3 TillenArray3::array_cross(const TillenArray3& a)
 {
-	// TODO: 
-	return TillenArray3();
+	return TillenArray3(
+		this->y * a.z - a.y * this->z,
+		a.x * this->z - this->x * a.z,
+		this->x * a.y - a.x * this->y
+	);
+
 }
 // =========== TillenArray3 end ===========
 
 // =========== TillenArray4 end ===========
 TillenArray4::TillenArray4(double v0, double v1, double v2, double v3) : x(v0), y(v1), z(v2), w(v3) {};
 TillenArray4::~TillenArray4() {};
+std::string TillenArray4::to_str()const
+{
+	std::ostringstream oss;
+	oss << "TillenArray4[" << std::hex << this << "]: " << std::dec << "(" << x << "," << y << "," << z << "," << w << ")";
+	return oss.str();
+}
+std::ostream& operator<<(std::ostream& output, const TillenArray4& a)
+{
+	std::ostringstream oss;
+	output << a.to_str();
+	return output;
+}
 
 TillenArray4 TillenArray4::array_add(const TillenArray4& a)
 {
@@ -133,3 +177,37 @@ double TillenArray4::operator*(const TillenArray4& a)
 }
 
 // =========== TillenArray4 end ===========
+
+
+int test_tillen_math()
+{
+	TillenVec2 a2(10, 10), b2(9.5, 9.5);
+	std::cout << "=========== TillenArray2 beg ===========" << std::endl;
+	std::cout << a2 << std::endl;
+	std::cout << b2 << std::endl;
+	std::cout << a2 + b2 << std::endl;
+	std::cout << a2 - b2 << std::endl;
+	std::cout << a2 * b2 << std::endl;
+	std::cout << a2 * 3.0 << std::endl;
+	std::cout << a2.array_cross(b2) << std::endl;
+
+	std::cout << "=========== TillenArray3 beg ===========" << std::endl;
+	TillenVec3 a3(10, 0, 0), b3(0, 10, 0);
+	std::cout << a3 << std::endl;
+	std::cout << b3 << std::endl;
+	std::cout << a3 + b3 << std::endl;
+	std::cout << a3 - b3 << std::endl;
+	std::cout << a3 * b3 << std::endl;
+	std::cout << a3 * 3.0 << std::endl;
+	std::cout << a3.array_cross(b3) << std::endl;
+
+	std::cout << "=========== TillenArray4 beg ===========" << std::endl;
+	TillenVec4 a4(10, 10, 10, 10), b4(9.5, 9.5, 9.5, 9.5);
+	std::cout << a4 << std::endl;
+	std::cout << b4 << std::endl;
+	std::cout << a4 + b4 << std::endl;
+	std::cout << a4 - b4 << std::endl;
+	std::cout << a4 * b4 << std::endl;
+	std::cout << a4 * 3.0 << std::endl;
+	return 0;
+}
