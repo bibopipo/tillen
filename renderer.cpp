@@ -160,7 +160,7 @@ int TillenRenderer::draw_scene()
 	{
 		for (int x = 20; x < 300; x++)
 		{
-			this->frame_buffer->put_pixel(x, y, TillenColorRGBA(1.0, 1.0, 1.0, 1.0));
+			this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.3, 0.5, 0.28, 1.0));
 		}
 	}
 	this->frame_buffer->fill_texture_data();
