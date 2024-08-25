@@ -1,13 +1,10 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
 #include "tillen_math.h"
 
-class sphere 
+class Sphere 
 {
 public:
 	TillenVec3 center;
 	double radius;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TILLEN_MATH_H
-#define TILLEN_MATH_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -96,4 +95,3 @@ typedef TillenArray4 TillenColorRGBA;
 
 int test_tillen_math();
 
-#endif
