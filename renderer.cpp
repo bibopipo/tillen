@@ -45,9 +45,12 @@ int TillenRenderer::init(int ww, int wh, TillenFrameBuffer* fb, TillenScene* s)
 	// create shader
 	const char* vs_source = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
+		"layout(location = 1) in vec2 aTexCoord;\n"
+		"out vec2 TexCoord;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"   TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
 		"}\0";
 	const char* fs_source = "#version 330 core\n"
 		"out vec4 FragColor;\n"
@@ -156,9 +159,9 @@ int TillenRenderer::process_input()
 int TillenRenderer::draw_scene()
 {
 	this->frame_buffer->clear_buffer();
-	for (int y = 10; y < 200; y++)
+	for (int x = 100; x < 500; x++)
 	{
-		for (int x = 20; x < 300; x++)
+		for (int y = 200; y < 500; y++)
 		{
 			this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.3, 0.5, 0.28, 1.0));
 		}
