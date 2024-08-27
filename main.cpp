@@ -15,12 +15,13 @@ int test()
 
 int main(int argc, char** argv)
 {
-	//test();
-	TillenFrameBuffer frame_buffer;
+	test();
+
+	TillenFrameBuffer frame_buffer(1024, 768);
 	TillenScene scene;
 
 	TillenRenderer render;
-	render.init(800, 600, &frame_buffer, &scene);
+	render.init(1024, 768, &frame_buffer, &scene);
 	render.render_loop();
 
 	return 0;

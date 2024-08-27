@@ -14,6 +14,13 @@ public:
 	int window_width;
 	int window_height;
 
+	TillenVec3 camera_pos;
+	TillenVec3 camera_forward;
+	TillenVec3 camera_up;
+	TillenVec3 camera_right;
+	double near_distance;
+	double far_distance;
+
 	GLFWwindow* window;
 	unsigned int frame_texture;
 	unsigned int shader_program_id;
@@ -24,7 +31,10 @@ public:
 
 	int init(int ww, int wh, TillenFrameBuffer* fb, TillenScene* s);
 	int process_input();
+
+	TillenVec2 canvas_to_viewport(int x, int y);
 	int draw_scene();
+
 	int render_loop();
 	int exit();
 };

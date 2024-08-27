@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "sphere.h"
 
 class TillenScene
@@ -7,5 +9,5 @@ class TillenScene
 public:
 	TillenScene();
 	~TillenScene();
-	Sphere spheres[3];
+	std::vector<Sphere> spheres;
 };

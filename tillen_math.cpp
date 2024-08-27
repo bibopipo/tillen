@@ -19,43 +19,43 @@ std::ostream& operator<<(std::ostream& output, const TillenArray2& a)
 }
 
 
-TillenArray2 TillenArray2::array_add(const TillenArray2& a)
+TillenArray2 TillenArray2::array_add(const TillenArray2& a) const
 {
 	return TillenArray2(this->x + a.x, this->y + a.y);
 }
-TillenArray2 TillenArray2::operator+(const TillenArray2& a)
+TillenArray2 TillenArray2::operator+(const TillenArray2& a) const
 {
 	return this->array_add(a);
 }
 
-TillenArray2 TillenArray2::array_sub(const TillenArray2& a)
+TillenArray2 TillenArray2::array_sub(const TillenArray2& a) const
 {
 	return TillenArray2(this->x - a.x, this->y - a.y);
 }
-TillenArray2 TillenArray2::operator-(const TillenArray2& a)
+TillenArray2 TillenArray2::operator-(const TillenArray2& a) const
 {
 	return this->array_sub(a);
 }
 
-TillenArray2 TillenArray2::array_multi(double a)
+TillenArray2 TillenArray2::array_multi(double a) const
 {
 	return TillenArray2(this->x * a, this->y * a);
 }
-TillenArray2 TillenArray2::operator*(double a)
+TillenArray2 TillenArray2::operator*(double a) const
 {
 	return this->array_multi(a);
 }
 
-double TillenArray2::array_dot(const TillenArray2& a)
+double TillenArray2::array_dot(const TillenArray2& a) const
 {
 	return this->x * a.x + this->y * a.y;
 }
-double TillenArray2::operator*(const TillenArray2& a)
+double TillenArray2::operator*(const TillenArray2& a) const
 {
 	return this->array_dot(a);
 }
 
-double TillenArray2::array_cross(const TillenArray2& a)
+double TillenArray2::array_cross(const TillenArray2& a) const
 {
 	return this->x * a.y - a.x * this->y;
 }
@@ -77,43 +77,43 @@ std::ostream& operator<<(std::ostream& output, const TillenArray3& a)
 	return output;
 }
 
-TillenArray3 TillenArray3::array_add(const TillenArray3& a)
+TillenArray3 TillenArray3::array_add(const TillenArray3& a) const
 {
 	return TillenArray3(this->x + a.x, this->y + a.y, this->z + a.z);
 }
-TillenArray3 TillenArray3::operator+(const TillenArray3& a)
+TillenArray3 TillenArray3::operator+(const TillenArray3& a) const
 {
 	return this->array_add(a);
 }
 
-TillenArray3 TillenArray3::array_sub(const TillenArray3& a)
+TillenArray3 TillenArray3::array_sub(const TillenArray3& a) const
 {
 	return TillenArray3(this->x - a.x, this->y - a.y, this->z - a.z);
 }
-TillenArray3 TillenArray3::operator-(const TillenArray3& a)
+TillenArray3 TillenArray3::operator-(const TillenArray3& a) const
 {
 	return this->array_sub(a);
 }
 
-TillenArray3 TillenArray3::array_multi(double a)
+TillenArray3 TillenArray3::array_multi(double a) const
 {
 	return TillenArray3(this->x * a, this->y * a, this->z * a);
 }
-TillenArray3 TillenArray3::operator*(double a)
+TillenArray3 TillenArray3::operator*(double a) const
 {
 	return this->array_multi(a);
 }
 
-double TillenArray3::array_dot(const TillenArray3& a)
+double TillenArray3::array_dot(const TillenArray3& a) const
 {
 	return this->x * a.x + this->y * a.y + this->z * a.z;
 }
-double TillenArray3::operator*(const TillenArray3& a)
+double TillenArray3::operator*(const TillenArray3& a) const
 {
 	return this->array_dot(a);
 }
 
-TillenArray3 TillenArray3::array_cross(const TillenArray3& a)
+TillenArray3 TillenArray3::array_cross(const TillenArray3& a) const
 {
 	return TillenArray3(
 		this->y * a.z - a.y * this->z,
@@ -140,43 +140,73 @@ std::ostream& operator<<(std::ostream& output, const TillenArray4& a)
 	return output;
 }
 
-TillenArray4 TillenArray4::array_add(const TillenArray4& a)
+TillenArray4 TillenArray4::array_add(const TillenArray4& a) const
 {
 	return TillenArray4(this->x + a.x, this->y + a.y, this->z + a.z, this->w + a.w);
 }
-TillenArray4 TillenArray4::operator+(const TillenArray4& a)
+TillenArray4 TillenArray4::operator+(const TillenArray4& a) const
 {
 	return this->array_add(a);
 }
 
-TillenArray4 TillenArray4::array_sub(const TillenArray4& a)
+TillenArray4 TillenArray4::array_sub(const TillenArray4& a) const
 {
 	return TillenArray4(this->x - a.x, this->y - a.y, this->z - a.z, this->w - a.w);
 }
-TillenArray4 TillenArray4::operator-(const TillenArray4& a)
+TillenArray4 TillenArray4::operator-(const TillenArray4& a) const
 {
 	return this->array_sub(a);
 }
 
-TillenArray4 TillenArray4::array_multi(double a)
+TillenArray4 TillenArray4::array_multi(double a) const
 {
 	return TillenArray4(this->x * a, this->y * a, this->z * a, this->w * a);
 }
-TillenArray4 TillenArray4::operator*(double a)
+TillenArray4 TillenArray4::operator*(double a) const
 {
 	return this->array_multi(a);
 }
 
-double TillenArray4::array_dot(const TillenArray4& a)
+double TillenArray4::array_dot(const TillenArray4& a) const
 {
 	return this->x * a.x + this->y * a.y + this->z * a.z + this->w * a.w;
 }
-double TillenArray4::operator*(const TillenArray4& a)
+double TillenArray4::operator*(const TillenArray4& a) const
 {
 	return this->array_dot(a);
 }
 
 // =========== TillenArray4 end ===========
+
+
+int get_intersection_between_sphere_and_ray(TillenArray2& res, const TillenVec3& ray_start, const TillenVec3& ray_end, const TillenVec3& sphere_center, double sphere_radius)
+{
+	// o: ray_start
+	// v: ray_end
+	// c: sphere_center
+	// r: radius
+
+	int res_num = 0;
+
+	TillenVec3 ov = ray_end - ray_start;
+	TillenVec3 co = ray_start - sphere_center;
+
+	double a = ov * ov;
+	double b = co * ov * 2.0;
+	double c = co * co - sphere_radius * sphere_radius;
+
+	double discriminant = b * b - 4 * a * c;
+	if (discriminant < 0)
+		return 0;
+	
+	res.val[0] = (-b + sqrt(discriminant)) / (2 * a);
+	res.val[1] = (-b - sqrt(discriminant)) / (2 * a);
+
+	if (discriminant == 0.0)
+		return 1;
+
+	return 2;
+}
 
 
 int test_tillen_math()

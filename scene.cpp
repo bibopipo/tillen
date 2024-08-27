@@ -3,14 +3,23 @@
 
 TillenScene::TillenScene()
 {
-	spheres[0].center = TillenVec3();
-	spheres[0].radius = 1.0;
+	Sphere s0;
+	s0.center = TillenVec3(0, -2, 6);
+	s0.radius = 2;
+	s0.color = TillenColorRGBA(1.0, 0, 0, 1.0);
+	this->spheres.push_back(s0);
 
-	spheres[1].center = TillenVec3();
-	spheres[1].radius = 1.0;
+	Sphere s1;
+	s1.center = TillenVec3(4, 0, 8);
+	s1.radius = 2;
+	s1.color = TillenColorRGBA(0, 0, 1.0, 1.0);
+	this->spheres.push_back(s1);
 
-	spheres[2].center = TillenVec3();
-	spheres[2].radius = 1.0;
+	Sphere s2;
+	s2.center = TillenVec3(-4, 0, 8);
+	s2.radius = 2,
+	s2.color = TillenColorRGBA(0, 1.0, 0, 1.0);
+	this->spheres.push_back(s2);
 }
 
 TillenScene::~TillenScene()

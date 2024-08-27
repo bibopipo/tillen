@@ -7,4 +7,5 @@ class Sphere
 public:
 	TillenVec3 center;
 	double radius;
+	TillenColorRGBA color;
 };

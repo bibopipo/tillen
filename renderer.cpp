@@ -11,6 +11,10 @@ TillenRenderer::~TillenRenderer()
 
 int TillenRenderer::init(int ww, int wh, TillenFrameBuffer* fb, TillenScene* s)
 {
+	this->camera_pos = TillenVec3(0, 0, -2.0);
+	this->near_distance = 2.0;
+	this->far_distance = 2000000.0;
+
 	this->window_width = ww;
 	this->window_height = wh;
 
@@ -156,14 +160,57 @@ int TillenRenderer::process_input()
 	return 0;
 }
 
+TillenVec2 TillenRenderer::canvas_to_viewport(int x, int y)
+{
+	return TillenVec2(
+		2.0 * x / this->frame_buffer->width - 1.0,
+		2.0 * y / this->frame_buffer->height- 1.0
+	);
+}
+
 int TillenRenderer::draw_scene()
 {
 	this->frame_buffer->clear_buffer();
-	for (int x = 100; x < 500; x++)
+
+	for (int x = 0; x < this->frame_buffer->width; x++)
 	{
-		for (int y = 200; y < 500; y++)
+		for (int y = 0; y < this->frame_buffer->height; y++)
 		{
-			this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.3, 0.5, 0.28, 1.0));
+			double closest_t = INFINITY;
+			Sphere* closest_sphere = NULL;
+			TillenVec2 viewport_point = this->canvas_to_viewport(x, y);
+			TillenVec3 viewport_position = TillenVec3(viewport_point.x, viewport_point.y, 0.0);
+
+			for (int i = 0; i < this->scene->spheres.size(); i++)
+			{
+				Sphere s = this->scene->spheres[i];
+				TillenArray2 res;
+				int intersection_num = get_intersection_between_sphere_and_ray(
+					res,
+					this->camera_pos,
+					viewport_position,
+					s.center,
+					s.radius
+				);
+
+				for (int j = 0; j < intersection_num; j++)
+				{
+					double t = res.val[j];
+					if (t < 1.0)
+						continue;
+
+					if (t < closest_t)
+					{
+						closest_t = t;
+						closest_sphere = &s;
+					}
+				}
+			}
+
+			if (closest_sphere != NULL)
+				this->frame_buffer->put_pixel(x, y, closest_sphere->color);
+			else
+				this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.0, 0.0, 0.0, 1.0));
 		}
 	}
 	this->frame_buffer->fill_texture_data();
