@@ -128,12 +128,12 @@ int TillenRenderer::init(int ww, int wh, TillenFrameBuffer* fb, TillenScene* s)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// texture coord attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// texture 
 	// -------------------------
@@ -164,8 +164,16 @@ TillenVec2 TillenRenderer::canvas_to_viewport(int x, int y)
 {
 	return TillenVec2(
 		2.0 * x / this->frame_buffer->width - 1.0,
-		2.0 * y / this->frame_buffer->height- 1.0
+		2.0 * y / this->frame_buffer->height - 1.0
 	);
+}
+
+TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& normal, const TillenVec3& light_direction, const TillenColorRGBA& light_color)
+{
+	TillenVec3 L = light_direction * -1;
+	double ratio = (normal * light_direction) / (std::sqrt(normal * normal) * std::sqrt(light_direction * light_direction));
+	ratio = std::max(ratio, 0.0);
+	return light_color * ratio;
 }
 
 int TillenRenderer::draw_scene()
@@ -211,13 +219,59 @@ int TillenRenderer::draw_scene()
 			}
 
 			if (closest_sphere != NULL)
-				this->frame_buffer->put_pixel(x, y, closest_sphere->color);
+			{
+				TillenColorRGBA color = closest_sphere->color;
+				TillenVec3 position = this->camera_pos + (viewport_position - this->camera_pos) * closest_t;
+				TillenVec3 sphere_normal = position - closest_sphere->center;
+				sphere_normal = sphere_normal * (1.0 / std::sqrt(sphere_normal * sphere_normal));
+				TillenColorRGBA final_light_color = TillenColorRGBA(0, 0, 0, 1);
+
+				// point
+				for (int i = 0; i < this->scene->point_lights.size(); i++)
+				{
+					final_light_color = final_light_color + this->comput_point_light(position, sphere_normal, this->scene->point_lights[i]);
+				}
+
+				// directional
+				for (int i = 0; i < this->scene->directional_lights.size(); i++)
+				{
+					final_light_color = final_light_color + this->comput_directional_light(sphere_normal, this->scene->directional_lights[i]);
+				}
+
+				// ambient
+				final_light_color = final_light_color + this->scene->ambient_light;
+
+				double final_light_color_r = std::min(std::max(0.0, final_light_color.r), 1.0);
+				double final_light_color_g = std::min(std::max(0.0, final_light_color.g), 1.0);
+				double final_light_color_b = std::min(std::max(0.0, final_light_color.b), 1.0);
+				double final_light_color_a = 1.0;
+
+				TillenColorRGBA final_color(
+					color.r * final_light_color_r,
+					color.g * final_light_color_g,
+					color.b * final_light_color_b,
+					1.0
+				);
+
+				this->frame_buffer->put_pixel(x, y, final_color);
+			}
 			else
 				this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.0, 0.0, 0.0, 1.0));
 		}
 	}
 	this->frame_buffer->fill_texture_data();
 	return 0;
+}
+
+TillenColorRGBA TillenRenderer::comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl)
+{
+	TillenVec3 light_direction = pl.position - position;
+	return this->comput_light(normal, light_direction, pl.color);
+}
+
+TillenColorRGBA TillenRenderer::comput_directional_light(const TillenVec3& normal, const DirectionalLight& dl)
+{
+	return this->comput_light(normal, dl.direction, dl.color);
 }
 
 int TillenRenderer::render_loop()
@@ -235,7 +289,7 @@ int TillenRenderer::render_loop()
 
 		this->draw_scene();
 
-		 //bind Texture
+		//bind Texture
 		glBindTexture(GL_TEXTURE_2D, this->frame_texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->frame_buffer->width, this->frame_buffer->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->frame_buffer->texture_data);
 		glGenerateMipmap(GL_TEXTURE_2D);
