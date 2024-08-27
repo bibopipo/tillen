@@ -183,15 +183,18 @@ int TillenRenderer::draw_scene()
 
 			for (int i = 0; i < this->scene->spheres.size(); i++)
 			{
-				Sphere s = this->scene->spheres[i];
+				Sphere* s = &this->scene->spheres[i];
 				TillenArray2 res;
 				int intersection_num = get_intersection_between_sphere_and_ray(
 					res,
 					this->camera_pos,
 					viewport_position,
-					s.center,
-					s.radius
+					s->center,
+					s->radius
 				);
+
+				if (intersection_num > 0 && i != 2)
+					int a = 1;
 
 				for (int j = 0; j < intersection_num; j++)
 				{
@@ -202,7 +205,7 @@ int TillenRenderer::draw_scene()
 					if (t < closest_t)
 					{
 						closest_t = t;
-						closest_sphere = &s;
+						closest_sphere = s;
 					}
 				}
 			}
