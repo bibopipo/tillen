@@ -2,7 +2,7 @@
 
 #include "tillen_math.h"
 
-class Sphere 
+class Sphere
 {
 public:
 	TillenVec3 center;

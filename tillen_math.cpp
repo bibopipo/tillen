@@ -198,7 +198,7 @@ int get_intersection_between_sphere_and_ray(TillenArray2& res, const TillenVec3&
 	double discriminant = b * b - 4 * a * c;
 	if (discriminant < 0)
 		return 0;
-	
+
 	res.val[0] = (-b + sqrt(discriminant)) / (2 * a);
 	res.val[1] = (-b - sqrt(discriminant)) / (2 * a);
 

@@ -5,7 +5,7 @@
 class TillenFrameBuffer
 {
 public:
-	TillenFrameBuffer(int w =1024, int h = 768);
+	TillenFrameBuffer(int w = 1024, int h = 768);
 	~TillenFrameBuffer();
 	int put_pixel(int x, int y, const TillenColorRGBA& color);
 	TillenColorRGBA get_pixel(int x, int y);
