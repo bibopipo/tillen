@@ -171,7 +171,7 @@ TillenVec2 TillenRenderer::canvas_to_viewport(int x, int y)
 TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& position, const TillenVec3& raw_normal, const TillenVec3& light_direction, const TillenVec3& view_position, const TillenColorRGBA& light_color, double shiny)
 {
 	TillenVec3 normal = raw_normal * (1.0 / std::sqrt(raw_normal * raw_normal));
-	TillenVec3 L = light_direction *-1;
+	TillenVec3 L = light_direction; //* -1.0;
 	double diffuse_light_ratio = (normal * light_direction) / std::sqrt(light_direction * light_direction);
 	diffuse_light_ratio = std::max(diffuse_light_ratio, 0.0);
 
@@ -194,7 +194,7 @@ TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& position, const T
 
 TillenColorRGBA TillenRenderer::comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl, double shiny)
 {
-	TillenVec3 light_direction = position - pl.position;
+	TillenVec3 light_direction = pl.position - position;
 	return this->comput_light(position, normal, light_direction, this->camera_pos, pl.color, shiny);
 }
 
