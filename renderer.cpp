@@ -11,7 +11,7 @@ TillenRenderer::~TillenRenderer()
 
 int TillenRenderer::init(int ww, int wh, TillenFrameBuffer* fb, TillenScene* s)
 {
-	this->camera_pos = TillenVec3(0, 0, -2.0);
+	this->camera_pos = TillenVec3(0, 0, 0);
 	this->near_distance = 2.0;
 	this->far_distance = 2000000.0;
 
@@ -187,7 +187,7 @@ int TillenRenderer::draw_scene()
 			double closest_t = INFINITY;
 			Sphere* closest_sphere = NULL;
 			TillenVec2 viewport_point = this->canvas_to_viewport(x, y);
-			TillenVec3 viewport_position = TillenVec3(viewport_point.x, viewport_point.y, 0.0);
+			TillenVec3 viewport_position = TillenVec3(viewport_point.x, viewport_point.y, 2.0);
 
 			for (int i = 0; i < this->scene->spheres.size(); i++)
 			{

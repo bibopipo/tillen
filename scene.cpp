@@ -22,6 +22,12 @@ TillenScene::TillenScene()
 	s2.color = TillenColorRGBA(0, 1.0, 0, 1.0);
 	this->spheres.push_back(s2);
 
+	Sphere s3;
+	s3.center = TillenVec3(0, -10002, 0);
+	s3.color = TillenColorRGBA(1.0, 1.0, 0, 1.0);
+	s3.radius = 10000;
+	this->spheres.push_back(s3);
+
 	// lights
 	this->ambient_light = TillenColorRGBA(0.2, 0.2, 0.2, 1.0);
 
