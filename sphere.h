@@ -8,4 +8,5 @@ public:
 	TillenVec3 center;
 	double radius;
 	TillenColorRGBA color;
+	double specular;
 };

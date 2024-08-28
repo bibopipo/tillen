@@ -33,9 +33,9 @@ public:
 	int process_input();
 
 	TillenVec2 canvas_to_viewport(int x, int y);
-	TillenColorRGBA comput_light(const TillenVec3& normal, const TillenVec3& light_direction, const TillenColorRGBA& light_color);
-	TillenColorRGBA comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl);
-	TillenColorRGBA comput_directional_light(const TillenVec3& normal, const DirectionalLight& dl);
+	TillenColorRGBA comput_light(const TillenVec3& position, const TillenVec3& normal, const TillenVec3& light_direction, const TillenVec3& view_position, const TillenColorRGBA& light_color, double shiny);
+	TillenColorRGBA comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl, double shiny);
+	TillenColorRGBA comput_directional_light(const TillenVec3& position, const TillenVec3& normal, const DirectionalLight& dl, double shiny);
 	int draw_scene();
 
 	int render_loop();

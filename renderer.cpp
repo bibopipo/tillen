@@ -168,12 +168,39 @@ TillenVec2 TillenRenderer::canvas_to_viewport(int x, int y)
 	);
 }
 
-TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& normal, const TillenVec3& light_direction, const TillenColorRGBA& light_color)
+TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& position, const TillenVec3& raw_normal, const TillenVec3& light_direction, const TillenVec3& view_position, const TillenColorRGBA& light_color, double shiny)
 {
+	TillenVec3 normal = raw_normal * (1.0 / std::sqrt(raw_normal * raw_normal));
 	TillenVec3 L = light_direction * -1;
-	double ratio = (normal * light_direction) / (std::sqrt(normal * normal) * std::sqrt(light_direction * light_direction));
-	ratio = std::max(ratio, 0.0);
-	return light_color * ratio;
+	double diffuse_light_ratio = (normal * light_direction) / std::sqrt(light_direction * light_direction);
+	diffuse_light_ratio = std::max(diffuse_light_ratio, 0.0);
+
+	double specular_light_ratio = 0;
+
+	if (shiny != -1)
+	{
+		TillenVec3 R = normal * (L * normal) * 2 - L;
+		TillenVec3 V = view_position - position;
+
+		double r_dot_v = R * V;
+		if (r_dot_v > 0)
+		{
+			specular_light_ratio = std::pow(r_dot_v / (std::sqrt(R * R) * std::sqrt(V * V)), shiny);
+		}
+	}
+	
+	return light_color* (diffuse_light_ratio + specular_light_ratio);
+}
+
+TillenColorRGBA TillenRenderer::comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl, double shiny)
+{
+	TillenVec3 light_direction = pl.position - position;
+	return this->comput_light(position, normal, light_direction, this->camera_pos, pl.color, shiny);
+}
+
+TillenColorRGBA TillenRenderer::comput_directional_light(const TillenVec3& position, const TillenVec3& normal, const DirectionalLight& dl, double shiny)
+{
+	return this->comput_light(position, normal, dl.direction, this->camera_pos, dl.color, shiny);
 }
 
 int TillenRenderer::draw_scene()
@@ -185,7 +212,7 @@ int TillenRenderer::draw_scene()
 		for (int y = 0; y < this->frame_buffer->height; y++)
 		{
 			double closest_t = INFINITY;
-			Sphere* closest_sphere = NULL;
+			int closest_sphere_index = -1;
 			TillenVec2 viewport_point = this->canvas_to_viewport(x, y);
 			TillenVec3 viewport_position = TillenVec3(viewport_point.x, viewport_point.y, 2.0);
 
@@ -213,29 +240,30 @@ int TillenRenderer::draw_scene()
 					if (t < closest_t)
 					{
 						closest_t = t;
-						closest_sphere = s;
+						closest_sphere_index = i;
 					}
 				}
 			}
 
-			if (closest_sphere != NULL)
+			if (closest_sphere_index != -1)
 			{
-				TillenColorRGBA color = closest_sphere->color;
+				Sphere closest_sphere = this->scene->spheres[closest_sphere_index];
+				TillenColorRGBA color = closest_sphere.color;
 				TillenVec3 position = this->camera_pos + (viewport_position - this->camera_pos) * closest_t;
-				TillenVec3 sphere_normal = position - closest_sphere->center;
+				TillenVec3 sphere_normal = position - closest_sphere.center;
 				sphere_normal = sphere_normal * (1.0 / std::sqrt(sphere_normal * sphere_normal));
 				TillenColorRGBA final_light_color = TillenColorRGBA(0, 0, 0, 1);
 
 				// point
 				for (int i = 0; i < this->scene->point_lights.size(); i++)
 				{
-					final_light_color = final_light_color + this->comput_point_light(position, sphere_normal, this->scene->point_lights[i]);
+					final_light_color = final_light_color + this->comput_point_light(position, sphere_normal, this->scene->point_lights[i], closest_sphere.specular);
 				}
 
 				// directional
 				for (int i = 0; i < this->scene->directional_lights.size(); i++)
 				{
-					final_light_color = final_light_color + this->comput_directional_light(sphere_normal, this->scene->directional_lights[i]);
+					final_light_color = final_light_color + this->comput_directional_light(position, sphere_normal, this->scene->directional_lights[i], closest_sphere.specular);
 				}
 
 				// ambient
@@ -261,17 +289,6 @@ int TillenRenderer::draw_scene()
 	}
 	this->frame_buffer->fill_texture_data();
 	return 0;
-}
-
-TillenColorRGBA TillenRenderer::comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl)
-{
-	TillenVec3 light_direction = pl.position - position;
-	return this->comput_light(normal, light_direction, pl.color);
-}
-
-TillenColorRGBA TillenRenderer::comput_directional_light(const TillenVec3& normal, const DirectionalLight& dl)
-{
-	return this->comput_light(normal, dl.direction, dl.color);
 }
 
 int TillenRenderer::render_loop()
