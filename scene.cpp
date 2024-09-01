@@ -37,11 +37,11 @@ TillenScene::TillenScene()
 
 	PointLight pl0;
 	pl0.position = TillenVec3(4, 2, 0);
-	pl0.color = TillenColorRGBA(0.6, 0.6, 0.6, 1.0);
+	pl0.color = TillenColorRGBA(0.8, 0.8, 0.8, 1.0);
 	this->point_lights.push_back(pl0);
 
 	DirectionalLight dl0;
-	dl0.direction = TillenVec3(1, 4, 4);
+	dl0.direction = TillenVec3(1, 4, 4) * -1;
 	dl0.color = TillenColorRGBA(0.2, 0.2, 0.2, 1.0);
 	this->directional_lights.push_back(dl0);
 }

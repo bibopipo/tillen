@@ -33,9 +33,13 @@ public:
 	int process_input();
 
 	TillenVec2 canvas_to_viewport(int x, int y);
+
 	TillenColorRGBA comput_light(const TillenVec3& position, const TillenVec3& normal, const TillenVec3& light_direction, const TillenVec3& view_position, const TillenColorRGBA& light_color, double shiny);
 	TillenColorRGBA comput_point_light(const TillenVec3& position, const TillenVec3& normal, const PointLight& pl, double shiny);
 	TillenColorRGBA comput_directional_light(const TillenVec3& position, const TillenVec3& normal, const DirectionalLight& dl, double shiny);
+
+	int get_closest_intersection_sphere(double& res_t, int& res_sphere_index, const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t);
+	TillenColorRGBA ray_trace(const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t);
 	int draw_scene();
 
 	int render_loop();

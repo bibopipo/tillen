@@ -49,14 +49,6 @@ int TillenFrameBuffer::fill_texture_data()
 {
 	for (int i = 0; i < this->width * this->height * 4; i++)
 	{
-		//if (i % 4 == 0)
-		//	this->texture_data[i] = uint8_t(0.3 * 255.0);
-		//else if (i % 4 == 1)
-		//	this->texture_data[i] = uint8_t(0.5 * 255.0);
-		//else if (i % 4 == 2)
-		//	this->texture_data[i] = uint8_t(0.28 * 255.0);
-		//else
-		//	this->texture_data[i] = uint8_t(1.0 * 255.0);
 		this->texture_data[i] = uint8_t(255.0 * this->buffer[i]);
 	}
 	return 0;

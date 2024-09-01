@@ -170,9 +170,17 @@ TillenVec2 TillenRenderer::canvas_to_viewport(int x, int y)
 
 TillenColorRGBA TillenRenderer::comput_light(const TillenVec3& position, const TillenVec3& raw_normal, const TillenVec3& light_direction, const TillenVec3& view_position, const TillenColorRGBA& light_color, double shiny)
 {
+
 	TillenVec3 normal = raw_normal * (1.0 / std::sqrt(raw_normal * raw_normal));
 	TillenVec3 L = light_direction * -1.0;
-	double diffuse_light_ratio = (normal * L) / std::sqrt(L* L);
+
+	// judge shadow
+	double closest_shadow_t = INFINITY;
+	int closest_shadow_sphere_index = -1;
+	if (this->get_closest_intersection_sphere(closest_shadow_t, closest_shadow_sphere_index, position, position + L * 0.001, 0.001, INFINITY) > 0)
+		return TillenColorRGBA(0, 0, 0, 1.0);
+
+	double diffuse_light_ratio = (normal * L) / std::sqrt(L * L);
 	diffuse_light_ratio = std::max(diffuse_light_ratio, 0.0);
 
 	double specular_light_ratio = 0;
@@ -203,6 +211,94 @@ TillenColorRGBA TillenRenderer::comput_directional_light(const TillenVec3& posit
 	return this->comput_light(position, normal, dl.direction, this->camera_pos, dl.color, shiny);
 }
 
+int TillenRenderer::get_closest_intersection_sphere(double& res_t, int& res_sphere_index, const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t)
+{
+	int closet_intersection_num = 0;
+	res_t = INFINITY;
+	res_sphere_index = -1;
+
+	for (int i = 0; i < this->scene->spheres.size(); i++)
+	{
+		Sphere* s = &this->scene->spheres[i];
+		TillenArray2 res;
+		int intersection_num = get_intersection_between_sphere_and_ray(
+			res,
+			start_pos,
+			end_pos,
+			s->center,
+			s->radius
+		);
+
+		if (intersection_num > 0 && i != 2)
+			int a = 1;
+
+		for (int j = 0; j < intersection_num; j++)
+		{
+			double t = res.val[j];
+			if (t < min_t || t > max_t)
+				continue;
+
+			if (t < res_t)
+			{
+				res_t = t;
+				res_sphere_index = i;
+				closet_intersection_num = intersection_num;
+			}
+		}
+	}
+
+	return closet_intersection_num;
+}
+
+TillenColorRGBA TillenRenderer::ray_trace(const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t)
+{
+	double closest_t = INFINITY;
+	int closest_sphere_index = -1;
+	int closest_intersection_num = this->get_closest_intersection_sphere(closest_t, closest_sphere_index, start_pos, end_pos, min_t, max_t);
+
+	if (closest_intersection_num != 0)
+	{
+		Sphere closest_sphere = this->scene->spheres[closest_sphere_index];
+		TillenColorRGBA color = closest_sphere.color;
+		TillenVec3 position = start_pos + (end_pos - start_pos) * closest_t;
+
+		TillenVec3 sphere_normal = position - closest_sphere.center;
+		sphere_normal = sphere_normal * (1.0 / std::sqrt(sphere_normal * sphere_normal));
+		TillenColorRGBA final_light_color = TillenColorRGBA(0, 0, 0, 1);
+
+		// point
+		for (int i = 0; i < this->scene->point_lights.size(); i++)
+		{
+			final_light_color = final_light_color + this->comput_point_light(position, sphere_normal, this->scene->point_lights[i], closest_sphere.specular);
+		}
+
+		 //directional
+		for (int i = 0; i < this->scene->directional_lights.size(); i++)
+		{
+			final_light_color = final_light_color + this->comput_directional_light(position, sphere_normal, this->scene->directional_lights[i], closest_sphere.specular);
+		}
+
+		// ambient
+		final_light_color = final_light_color + this->scene->ambient_light;
+
+		double final_light_color_r = std::min(std::max(0.0, final_light_color.r), 1.0);
+		double final_light_color_g = std::min(std::max(0.0, final_light_color.g), 1.0);
+		double final_light_color_b = std::min(std::max(0.0, final_light_color.b), 1.0);
+		double final_light_color_a = 1.0;
+
+		TillenColorRGBA final_color(
+			color.r * final_light_color_r,
+			color.g * final_light_color_g,
+			color.b * final_light_color_b,
+			1.0
+		);
+
+		return final_color;
+	}
+
+	return TillenColorRGBA(0.0, 0.0, 0.0, 1.0);
+}
+
 int TillenRenderer::draw_scene()
 {
 	this->frame_buffer->clear_buffer();
@@ -216,77 +312,11 @@ int TillenRenderer::draw_scene()
 			TillenVec2 viewport_point = this->canvas_to_viewport(x, y);
 			TillenVec3 viewport_position = TillenVec3(viewport_point.x, viewport_point.y, 2.0);
 
-			for (int i = 0; i < this->scene->spheres.size(); i++)
-			{
-				Sphere* s = &this->scene->spheres[i];
-				TillenArray2 res;
-				int intersection_num = get_intersection_between_sphere_and_ray(
-					res,
-					this->camera_pos,
-					viewport_position,
-					s->center,
-					s->radius
-				);
-
-				if (intersection_num > 0 && i != 2)
-					int a = 1;
-
-				for (int j = 0; j < intersection_num; j++)
-				{
-					double t = res.val[j];
-					if (t < 1.0)
-						continue;
-
-					if (t < closest_t)
-					{
-						closest_t = t;
-						closest_sphere_index = i;
-					}
-				}
-			}
-
-			if (closest_sphere_index != -1)
-			{
-				Sphere closest_sphere = this->scene->spheres[closest_sphere_index];
-				TillenColorRGBA color = closest_sphere.color;
-				TillenVec3 position = this->camera_pos + (viewport_position - this->camera_pos) * closest_t;
-				TillenVec3 sphere_normal = position - closest_sphere.center;
-				sphere_normal = sphere_normal * (1.0 / std::sqrt(sphere_normal * sphere_normal));
-				TillenColorRGBA final_light_color = TillenColorRGBA(0, 0, 0, 1);
-
-				// point
-				for (int i = 0; i < this->scene->point_lights.size(); i++)
-				{
-					final_light_color = final_light_color + this->comput_point_light(position, sphere_normal, this->scene->point_lights[i], closest_sphere.specular);
-				}
-
-				// directional
-				for (int i = 0; i < this->scene->directional_lights.size(); i++)
-				{
-					final_light_color = final_light_color + this->comput_directional_light(position, sphere_normal, this->scene->directional_lights[i], closest_sphere.specular);
-				}
-
-				// ambient
-				final_light_color = final_light_color + this->scene->ambient_light;
-
-				double final_light_color_r = std::min(std::max(0.0, final_light_color.r), 1.0);
-				double final_light_color_g = std::min(std::max(0.0, final_light_color.g), 1.0);
-				double final_light_color_b = std::min(std::max(0.0, final_light_color.b), 1.0);
-				double final_light_color_a = 1.0;
-
-				TillenColorRGBA final_color(
-					color.r * final_light_color_r,
-					color.g * final_light_color_g,
-					color.b * final_light_color_b,
-					1.0
-				);
-
-				this->frame_buffer->put_pixel(x, y, final_color);
-			}
-			else
-				this->frame_buffer->put_pixel(x, y, TillenColorRGBA(0.0, 0.0, 0.0, 1.0));
+			TillenColorRGBA pixel_color = this->ray_trace(this->camera_pos, viewport_position, 1.0, INFINITY);
+			this->frame_buffer->put_pixel(x, y, pixel_color);
 		}
 	}
+
 	this->frame_buffer->fill_texture_data();
 	return 0;
 }
