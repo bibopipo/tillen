@@ -9,6 +9,7 @@ TillenScene::TillenScene()
 	s0.radius = 2;
 	s0.color = TillenColorRGBA(1.0, 0, 0, 1.0);
 	s0.specular = 500;
+	s0.reflective = 0.2;
 	this->spheres.push_back(s0);
 
 	Sphere s1;
@@ -16,6 +17,7 @@ TillenScene::TillenScene()
 	s1.radius = 2;
 	s1.color = TillenColorRGBA(0, 0, 1.0, 1.0);
 	s1.specular = 500;
+	s1.reflective = 0.3;
 	this->spheres.push_back(s1);
 
 	Sphere s2;
@@ -23,6 +25,7 @@ TillenScene::TillenScene()
 	s2.radius = 2;
 	s2.color = TillenColorRGBA(0, 1.0, 0, 1.0);
 	s2.specular = 10;
+	s2.reflective = 0.4;
 	this->spheres.push_back(s2);
 
 	Sphere s3;
@@ -30,6 +33,7 @@ TillenScene::TillenScene()
 	s3.color = TillenColorRGBA(1.0, 1.0, 0, 1.0);
 	s3.radius = 10000;
 	s3.specular = 1000;
+	s3.reflective = 0.5;
 	this->spheres.push_back(s3);
 
 	// lights

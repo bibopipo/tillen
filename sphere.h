@@ -9,4 +9,5 @@ public:
 	double radius;
 	TillenColorRGBA color;
 	double specular;
+	double reflective;
 };

@@ -39,7 +39,7 @@ public:
 	TillenColorRGBA comput_directional_light(const TillenVec3& position, const TillenVec3& normal, const DirectionalLight& dl, double shiny);
 
 	int get_closest_intersection_sphere(double& res_t, int& res_sphere_index, const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t);
-	TillenColorRGBA ray_trace(const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t);
+	TillenColorRGBA ray_trace(const TillenVec3& start_pos, const TillenVec3& end_pos, double min_t, double max_t, int recursive_depth);
 	int draw_scene();
 
 	int render_loop();
