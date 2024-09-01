@@ -329,6 +329,9 @@ int TillenRenderer::draw_scene()
 
 int TillenRenderer::render_loop()
 {
+	double last_time = glfwGetTime();
+	int frame_counter = 10;
+
 	while (!glfwWindowShouldClose(this->window))
 	{
 		// input
@@ -357,6 +360,16 @@ int TillenRenderer::render_loop()
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
+
+		frame_counter -= 1;
+		if (frame_counter == 0)
+		{
+			frame_counter = 10;
+			double cur_time = glfwGetTime();
+			double frame_rate = 10.0 / (cur_time - last_time);
+			last_time = cur_time;
+			std::cout << frame_rate << std::endl;
+		}
 	}
 	this->exit();
 	return 0;
